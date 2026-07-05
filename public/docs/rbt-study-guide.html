@@ -1,0 +1,699 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RBT Initial Competency Study Guide</title>
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+    <meta
+      name="description"
+      content="An independent, learner-friendly HTML study guide for RBT Initial Competency Assessment practice."
+    />
+    <style>
+      :root {
+        color-scheme: light;
+        --page: #f5f8fa;
+        --surface: #ffffff;
+        --text: #172033;
+        --muted: #5f6d7e;
+        --border: #d8e2e7;
+        --teal: #0f8b8d;
+        --teal-soft: #e4f5f5;
+        --green: #2f9e58;
+        --green-soft: #edf9f1;
+        --amber: #f59e0b;
+        --amber-soft: #fff7ed;
+        --blue: #4267b2;
+        --blue-soft: #edf3ff;
+        --red-soft: #fff1f1;
+        --radius: 10px;
+        --shadow: 0 18px 48px rgba(30, 42, 62, 0.08);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--page);
+        color: var(--text);
+      }
+
+      a {
+        color: inherit;
+      }
+
+      .shell {
+        display: grid;
+        grid-template-columns: 260px minmax(0, 1fr);
+        min-height: 100vh;
+      }
+
+      .side-nav {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow-y: auto;
+        padding: 22px;
+        border-right: 1px solid var(--border);
+        background: #ffffff;
+      }
+
+      .brand {
+        display: grid;
+        gap: 6px;
+        margin-bottom: 22px;
+      }
+
+      .brand strong {
+        font-size: 22px;
+        line-height: 1.05;
+      }
+
+      .brand span {
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.45;
+      }
+
+      .side-nav a {
+        display: block;
+        margin-bottom: 8px;
+        padding: 9px 10px;
+        border-radius: var(--radius);
+        color: #2d394b;
+        font-size: 14px;
+        font-weight: 760;
+        text-decoration: none;
+      }
+
+      .side-nav a:hover,
+      .side-nav a:focus-visible,
+      .side-nav a.is-active {
+        background: var(--teal-soft);
+        color: #087678;
+      }
+
+      .side-nav a.is-active {
+        box-shadow: inset 4px 0 0 var(--teal);
+      }
+
+      main {
+        min-width: 0;
+        padding: 34px clamp(20px, 5vw, 58px) 58px;
+      }
+
+      .hero {
+        max-width: 980px;
+        margin-bottom: 24px;
+      }
+
+      .hero h1 {
+        margin: 0;
+        font-size: clamp(38px, 7vw, 76px);
+        line-height: 0.94;
+        letter-spacing: 0;
+      }
+
+      .hero p {
+        max-width: 760px;
+        color: var(--muted);
+        font-size: 18px;
+        line-height: 1.6;
+      }
+
+      .notice {
+        max-width: 980px;
+        margin: 20px 0 26px;
+        padding: 16px 18px;
+        border: 1px solid var(--teal);
+        border-radius: var(--radius);
+        background: var(--teal-soft);
+        color: #173b44;
+        font-weight: 720;
+        line-height: 1.5;
+      }
+
+      .quick-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 14px;
+        max-width: 1120px;
+        margin-bottom: 32px;
+      }
+
+      .quick-card,
+      .section,
+      .task-card {
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        background: var(--surface);
+        box-shadow: var(--shadow);
+      }
+
+      .quick-card {
+        min-height: 128px;
+        padding: 18px;
+      }
+
+      .quick-card strong {
+        display: block;
+        margin-bottom: 8px;
+        color: #087678;
+        font-size: 28px;
+      }
+
+      .quick-card span {
+        color: var(--muted);
+        line-height: 1.45;
+      }
+
+      .section {
+        margin-top: 22px;
+        overflow: hidden;
+        scroll-margin-top: 24px;
+      }
+
+      .section-header {
+        padding: 22px 24px;
+        border-bottom: 1px solid var(--border);
+        background: linear-gradient(135deg, #f4fbfb 0%, #ffffff 52%, #fff7ed 100%);
+      }
+
+      .section-header h2 {
+        margin: 0 0 8px;
+        font-size: clamp(28px, 4vw, 44px);
+      }
+
+      .section-header p {
+        max-width: 900px;
+        margin: 0;
+        color: #405064;
+        line-height: 1.6;
+      }
+
+      .task-grid {
+        display: grid;
+        gap: 16px;
+        padding: 20px;
+      }
+
+      .task-card {
+        display: grid;
+        gap: 14px;
+        padding: 18px;
+        scroll-margin-top: 22px;
+      }
+
+      .task-heading {
+        display: flex;
+        align-items: baseline;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .task-heading span {
+        color: var(--teal);
+        font-size: 13px;
+        font-weight: 850;
+        text-transform: uppercase;
+      }
+
+      .task-heading h3 {
+        margin: 0;
+        font-size: 24px;
+      }
+
+      .learning-row {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .learning-box {
+        padding: 14px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        background: #fbfdfe;
+      }
+
+      .learning-box.example {
+        background: var(--green-soft);
+      }
+
+      .learning-box.watch {
+        background: var(--amber-soft);
+      }
+
+      .learning-box h4 {
+        margin: 0 0 8px;
+        font-size: 15px;
+      }
+
+      .learning-box p,
+      .learning-box li,
+      .task-card > p {
+        color: #405064;
+        line-height: 1.55;
+      }
+
+      .learning-box ul {
+        display: grid;
+        gap: 6px;
+        margin: 0;
+        padding-left: 20px;
+      }
+
+      .callout {
+        padding: 13px 14px;
+        border-left: 4px solid var(--blue);
+        border-radius: var(--radius);
+        background: var(--blue-soft);
+        color: #253b67;
+        font-weight: 760;
+        line-height: 1.5;
+      }
+
+      .visual-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+        padding: 20px;
+      }
+
+      .visual-card {
+        display: grid;
+        gap: 12px;
+        min-width: 0;
+        padding: 16px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        background: #ffffff;
+      }
+
+      .visual-card h3 {
+        margin: 0;
+        font-size: 19px;
+      }
+
+      .visual-card p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.45;
+      }
+
+      .mini-flow,
+      .mini-token {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+      }
+
+      .mini-flow span,
+      .mini-choice-grid span,
+      .mini-tags span,
+      .mini-matrix span,
+      .mini-timeline span,
+      .mini-decision span,
+      .mini-token span {
+        display: inline-flex;
+        min-height: 32px;
+        align-items: center;
+        padding: 5px 9px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        background: var(--teal-soft);
+        color: #173b44;
+        font-size: 13px;
+        font-weight: 800;
+        line-height: 1.25;
+      }
+
+      .mini-choice-grid,
+      .mini-matrix,
+      .mini-decision {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .mini-choice-grid span:nth-child(2n),
+      .mini-matrix span:nth-child(2n),
+      .mini-decision span:nth-child(2n) {
+        background: var(--green-soft);
+      }
+
+      .mini-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .mini-tags span:nth-child(3n) {
+        background: var(--amber-soft);
+      }
+
+      .mini-timeline {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 6px;
+      }
+
+      .mini-timeline span {
+        min-height: 54px;
+        justify-content: center;
+        text-align: center;
+      }
+
+      .mini-token span:first-child::before {
+        content: "";
+        width: 12px;
+        height: 12px;
+        margin-right: 7px;
+        border: 2px solid var(--teal);
+        border-radius: 50%;
+        background: #ffffff;
+      }
+
+      footer {
+        max-width: 980px;
+        margin-top: 36px;
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.55;
+      }
+
+      @media (max-width: 980px) {
+        .shell {
+          display: block;
+        }
+
+        .side-nav {
+          position: static;
+          height: auto;
+          border-right: 0;
+          border-bottom: 1px solid var(--border);
+        }
+
+        .quick-grid,
+        .visual-grid,
+        .mini-timeline,
+        .learning-row {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <nav class="side-nav" aria-label="Study guide navigation">
+        <div class="brand">
+          <strong>RBT Study Guide</strong>
+          <span>Independent practice notes for the Initial Competency Assessment.</span>
+        </div>
+        <a href="#memory-aids">Memory Aids</a>
+        <a href="#measurement">Measurement</a>
+        <a href="#assessment">Assessment</a>
+        <a href="#skill">Skill Acquisition and Behavior Reduction</a>
+        <a href="#professionalism">Professionalism and Requirements</a>
+      </nav>
+
+      <main>
+        <section class="hero">
+          <h1>RBT Initial Competency Study Guide</h1>
+          <p>
+            Use this original guide to review each competency task, see practical examples, and prepare for role-play,
+            interview, and with-client demonstrations.
+          </p>
+        </section>
+
+        <div class="notice">
+          This is a learning resource, not an official BACB product. Verify requirements with the official assessment
+          packet and follow your supervisor's clinical direction.
+        </div>
+
+        <section class="quick-grid" aria-label="Guide sections">
+          <article class="quick-card"><strong>1-3</strong><span>Measurement, data entry, and graph updates.</span></article>
+          <article class="quick-card"><strong>4-5</strong><span>Preference assessment and ABC data collection.</span></article>
+          <article class="quick-card"><strong>6-14</strong><span>Teaching procedures, prompts, tokens, safety, and behavior reduction.</span></article>
+          <article class="quick-card"><strong>15-19</strong><span>Notes, dignity, boundaries, supervision, and clinical direction.</span></article>
+        </section>
+
+        <section class="section" id="memory-aids">
+          <div class="section-header">
+            <h2>Memory Aids</h2>
+            <p>
+              These compact original diagrams are quick reminders. Use them to choose procedures, separate similar
+              concepts, and decide when to ask for clinical direction.
+            </p>
+          </div>
+          <div class="visual-grid">
+            <article class="visual-card">
+              <h3>Measurement chooser</h3>
+              <div class="mini-choice-grid">
+                <span>Count it: frequency / rate</span>
+                <span>Time it: duration / latency / IRT</span>
+                <span>Sample it: intervals / MTS</span>
+                <span>Product left: permanent product</span>
+              </div>
+            </article>
+            <article class="visual-card">
+              <h3>ABC chain</h3>
+              <div class="mini-flow"><span>Antecedent</span><span>Behavior</span><span>Consequence</span></div>
+              <p>Before, observable action, after.</p>
+            </article>
+            <article class="visual-card">
+              <h3>Preference chooser</h3>
+              <div class="mini-tags">
+                <span>Indirect</span><span>Free operant</span><span>Single stimulus</span><span>Paired choice</span><span>MSW</span><span>MSWO</span>
+              </div>
+            </article>
+            <article class="visual-card">
+              <h3>DTT loop</h3>
+              <div class="mini-flow"><span>SD</span><span>Response</span><span>Consequence</span><span>Data</span><span>Next trial</span></div>
+            </article>
+            <article class="visual-card">
+              <h3>Naturalistic teaching</h3>
+              <div class="mini-flow"><span>Motivation</span><span>Opportunity</span><span>Response</span><span>Natural reinforcer</span></div>
+            </article>
+            <article class="visual-card">
+              <h3>Chaining map</h3>
+              <div class="mini-tags"><span>Forward</span><span>Backward</span><span>Total task</span></div>
+              <p>Pick the direction that fits the task analysis and learner.</p>
+            </article>
+            <article class="visual-card">
+              <h3>Prompt hierarchy</h3>
+              <div class="mini-tags">
+                <span>Independent</span><span>Gesture / model / verbal / visual</span><span>Partial physical</span><span>Full physical</span>
+              </div>
+              <p>Intrusiveness varies by learner and program.</p>
+            </article>
+            <article class="visual-card">
+              <h3>Token system</h3>
+              <div class="mini-token"><span>Earn tokens</span><span>Exchange for backup reinforcer</span></div>
+            </article>
+            <article class="visual-card">
+              <h3>Antecedent toolkit</h3>
+              <div class="mini-tags">
+                <span>Priming</span><span>Visual schedule</span><span>Visual timer</span><span>Choices</span><span>Arrangement</span><span>NCR</span><span>High-p</span><span>OTR</span>
+              </div>
+            </article>
+            <article class="visual-card">
+              <h3>Differential reinforcement</h3>
+              <div class="mini-matrix">
+                <span>DRA: alternative</span><span>DRI: incompatible</span><span>DRO: no target in interval</span><span>DRH: higher rates</span><span>DRL: lower rates</span>
+              </div>
+            </article>
+            <article class="visual-card">
+              <h3>Extinction effects</h3>
+              <div class="mini-timeline">
+                <span>Begins</span><span>Burst possible</span><span>Variability</span><span>Decrease</span><span>Recovery possible</span>
+              </div>
+            </article>
+            <article class="visual-card">
+              <h3>Professionalism tree</h3>
+              <div class="mini-decision">
+                <span>Objective?</span><span>Protects dignity?</span><span>Within role?</span><span>Ask supervisor?</span>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="section" id="measurement">
+          <div class="section-header">
+            <h2>Measurement</h2>
+            <p>
+              Measurement turns session events into useful data. Choose the system that matches the behavior, record
+              carefully, and update graphs so the supervisor can review patterns.
+            </p>
+          </div>
+          <div class="task-grid">
+            <article class="task-card" id="task-1">
+              <div class="task-heading"><span>Task 1</span><h3>Continuous Measurement</h3></div>
+              <p>Use continuous measurement when the plan calls for every occurrence or exact timing value.</p>
+              <div class="learning-row">
+                <div class="learning-box"><h4>Remember</h4><ul><li>Frequency counts responses.</li><li>Duration times how long behavior lasts.</li><li>Latency times from cue to response.</li><li>IRT times between responses.</li></ul></div>
+                <div class="learning-box example"><h4>Example</h4><p>Counting 12 hand raises during group is frequency. Timing from "clean up" to the first toy placed in the bin is latency.</p></div>
+                <div class="learning-box watch"><h4>Watch Out</h4><p>Checking only at the end of each minute is not continuous measurement because it samples moments.</p></div>
+              </div>
+              <div class="callout">Quick check: If every response or exact time value is captured, think continuous measurement.</div>
+            </article>
+
+            <article class="task-card" id="task-2">
+              <div class="task-heading"><span>Task 2</span><h3>Discontinuous Measurement</h3></div>
+              <p>Use interval or time-sampling systems when the plan calls for a sampled estimate.</p>
+              <div class="learning-row">
+                <div class="learning-box"><h4>Remember</h4><ul><li>Whole interval requires behavior for the full interval.</li><li>Partial interval records any occurrence in the interval.</li><li>Momentary time sampling checks only at the exact moment.</li><li>Permanent product counts an outcome left behind.</li></ul></div>
+                <div class="learning-box example"><h4>Example</h4><p>Recording whether the learner is seated when a timer beeps is momentary time sampling.</p></div>
+                <div class="learning-box watch"><h4>Watch Out</h4><p>Partial interval may overestimate behavior. Whole interval may underestimate behavior.</p></div>
+              </div>
+              <div class="callout">Quick check: If the observer checks intervals or moments, it is discontinuous measurement.</div>
+            </article>
+
+            <article class="task-card" id="task-3">
+              <div class="task-heading"><span>Task 3</span><h3>Data and Graphs</h3></div>
+              <p>Enter data accurately and update the graph type that matches the data.</p>
+              <div class="learning-row">
+                <div class="learning-box"><h4>Remember</h4><ul><li>Line graphs show repeated data over time.</li><li>Bar graphs compare categories or totals.</li><li>Visual analysis looks at level, trend, variability, and changes.</li></ul></div>
+                <div class="learning-box example"><h4>Example</h4><p>Adding today's number of independent requests to a line graph helps the team see whether requests are increasing.</p></div>
+                <div class="learning-box watch"><h4>Watch Out</h4><p>Do not change treatment based on one data point unless directed by the supervisor.</p></div>
+              </div>
+              <div class="callout">Quick check: Graphs display data; they do not replace clinical decision-making.</div>
+            </article>
+          </div>
+        </section>
+
+        <section class="section" id="assessment">
+          <div class="section-header">
+            <h2>Assessment</h2>
+            <p>
+              Assessment tasks involve collecting information about preferences and behavior patterns. Follow the
+              procedure, record what happens, and avoid turning observations into unsupported conclusions.
+            </p>
+          </div>
+          <div class="task-grid">
+            <article class="task-card" id="task-4">
+              <div class="task-heading"><span>Task 4</span><h3>Preference Assessments</h3></div>
+              <p>Arrange materials and record selections or engagement according to the assessment format.</p>
+              <div class="learning-row">
+                <div class="learning-box"><h4>Remember</h4><ul><li>Indirect means reported information.</li><li>Free operant records engagement with available items.</li><li>Paired choice presents two items.</li><li>MSWO removes chosen items after selection.</li></ul></div>
+                <div class="learning-box example"><h4>Example</h4><p>Showing crackers and a ball together and recording crackers as selected is paired choice.</p></div>
+                <div class="learning-box watch"><h4>Watch Out</h4><p>Preferred items are not automatically reinforcers. Reinforcement is shown by increased future behavior.</p></div>
+              </div>
+              <div class="callout">Quick check: Preference tells what may work; reinforcement is confirmed by behavior change.</div>
+            </article>
+
+            <article class="task-card" id="task-5">
+              <div class="task-heading"><span>Task 5</span><h3>ABC Data</h3></div>
+              <p>Separate the antecedent, behavior, and consequence using observable language.</p>
+              <div class="learning-row">
+                <div class="learning-box"><h4>Remember</h4><ul><li>Antecedent happens before behavior.</li><li>Behavior is what the learner did.</li><li>Consequence is what followed.</li><li>Use objective descriptions.</li></ul></div>
+                <div class="learning-box example"><h4>Example</h4><p>Antecedent: worksheet presented. Behavior: learner pushed paper to floor. Consequence: staff removed paper for 30 seconds.</p></div>
+                <div class="learning-box watch"><h4>Watch Out</h4><p>"Wanted escape" is not an antecedent. It is an interpretation.</p></div>
+              </div>
+              <div class="callout">Quick check: Another observer should be able to picture the same event from your note.</div>
+            </article>
+          </div>
+        </section>
+
+        <section class="section" id="skill">
+          <div class="section-header">
+            <h2>Skill Acquisition and Behavior Reduction</h2>
+            <p>
+              These tasks cover teaching procedures, prompts, token systems, safety procedures, and behavior-reduction
+              options. Three of tasks 6-14 must be demonstrated with a client.
+            </p>
+          </div>
+          <div class="task-grid">
+            <article class="task-card" id="task-6"><div class="task-heading"><span>Task 6</span><h3>Discrete-Trial Teaching</h3></div><p>Run clear SD, response, and consequence trials.</p><div class="learning-row"><div class="learning-box"><h4>Remember</h4><ul><li>SD signals the opportunity.</li><li>Response is what the learner does.</li><li>Consequence follows the response.</li></ul></div><div class="learning-box example"><h4>Example</h4><p>"Touch car" followed by a touch and planned praise/token is a clean DTT trial.</p></div><div class="learning-box watch"><h4>Watch Out</h4><p>Error correction should follow the written plan, not staff frustration.</p></div></div><div class="callout">Quick check: DTT should have one clear instruction, one response chance, and one planned consequence.</div></article>
+            <article class="task-card" id="task-7"><div class="task-heading"><span>Task 7</span><h3>Naturalistic Teaching</h3></div><p>Use motivation and natural activities while still teaching a planned target.</p><div class="learning-row"><div class="learning-box"><h4>Remember</h4><ul><li>Capture opportunities that already happen.</li><li>Contrive opportunities by arranging the environment.</li><li>Use natural reinforcement when possible.</li></ul></div><div class="learning-box example"><h4>Example</h4><p>A learner reaches for bubbles, says "bubbles," and gets bubbles.</p></div><div class="learning-box watch"><h4>Watch Out</h4><p>Naturalistic does not mean unplanned or untracked.</p></div></div><div class="callout">Quick check: The target is planned, but the opportunity feels connected to the activity.</div></article>
+            <article class="task-card" id="task-8"><div class="task-heading"><span>Task 8</span><h3>Chaining</h3></div><p>Teach linked steps in a task analysis.</p><div class="learning-row"><div class="learning-box"><h4>Remember</h4><ul><li>Forward chaining starts at step one.</li><li>Backward chaining teaches the last step first.</li><li>Total task supports all steps each time.</li></ul></div><div class="learning-box example"><h4>Example</h4><p>Prompting each handwashing step every trial is total task chaining.</p></div><div class="learning-box watch"><h4>Watch Out</h4><p>"Get ready" is too broad unless broken into clear steps.</p></div></div><div class="callout">Quick check: Chaining fits skills where one step sets up the next.</div></article>
+            <article class="task-card" id="task-9"><div class="task-heading"><span>Task 9</span><h3>Shaping</h3></div><p>Reinforce closer approximations toward a final behavior.</p><div class="learning-row"><div class="learning-box"><h4>Remember</h4><ul><li>Terminal behavior is the final goal.</li><li>Approximations move closer over time.</li><li>Criteria should change gradually.</li></ul></div><div class="learning-box example"><h4>Example</h4><p>Reinforce a sound, then a closer sound, then the full word.</p></div><div class="learning-box watch"><h4>Watch Out</h4><p>A criterion jump that is too large can stop progress.</p></div></div><div class="callout">Quick check: Ask what closer version will contact reinforcement next.</div></article>
+            <article class="task-card" id="task-10"><div class="task-heading"><span>Task 10</span><h3>Discrimination Training</h3></div><p>Teach when a response should and should not occur.</p><div class="learning-row"><div class="learning-box"><h4>Remember</h4><ul><li>SD signals reinforcement is available.</li><li>S-delta signals it is not available.</li><li>Stimulus control means responding under the right cue.</li></ul></div><div class="learning-box example"><h4>Example</h4><p>The learner says "red" for the red card, not the blue card.</p></div><div class="learning-box watch"><h4>Watch Out</h4><p>If the learner only responds when you point, the prompt may still control the response.</p></div></div><div class="callout">Quick check: The relevant stimulus changes, and the response changes with it.</div></article>
+            <article class="task-card" id="task-11"><div class="task-heading"><span>Task 11</span><h3>Prompting</h3></div><p>Use temporary help and fade it toward independence.</p><div class="learning-row"><div class="learning-box"><h4>Remember</h4><ul><li>Physical prompts involve touch.</li><li>Model prompts show the response.</li><li>Gesture prompts point or motion.</li><li>Stimulus fading changes material features.</li></ul></div><div class="learning-box example"><h4>Example</h4><p>Pointing to the correct picture is a gesture prompt.</p></div><div class="learning-box watch"><h4>Watch Out</h4><p>Prompts that never fade can create prompt dependence.</p></div></div><div class="callout">Quick check: Prompting helps now; fading plans for independence.</div></article>
+            <article class="task-card" id="task-12"><div class="task-heading"><span>Task 12</span><h3>Token Systems</h3></div><p>Deliver and exchange tokens according to the written plan.</p><div class="learning-row"><div class="learning-box"><h4>Remember</h4><ul><li>Tokens are conditioned reinforcers.</li><li>Backup reinforcers are exchanged for tokens.</li><li>The earning and exchange rules should be predictable.</li></ul></div><div class="learning-box example"><h4>Example</h4><p>Five stars can be traded for two minutes of a game when the board is full.</p></div><div class="learning-box watch"><h4>Watch Out</h4><p>Changing prices mid-session can weaken the system.</p></div></div><div class="callout">Quick check: Tokens work best when earning, saving, and exchange are clear.</div></article>
+            <article class="task-card" id="task-13"><div class="task-heading"><span>Task 13</span><h3>Crisis / Emergency Procedures</h3></div><p>Follow approved protocols within role and training limits.</p><div class="learning-row"><div class="learning-box"><h4>Remember</h4><ul><li>Prevention happens before escalation.</li><li>De-escalation responds to early signs.</li><li>Crisis protocol is followed when safety procedures are required.</li></ul></div><div class="learning-box example"><h4>Example</h4><p>Moving extra materials away before a known hard transition can be prevention.</p></div><div class="learning-box watch"><h4>Watch Out</h4><p>Do not invent safety procedures. Follow the approved plan.</p></div></div><div class="callout">Quick check: In crisis work, the plan and training decide the response.</div></article>
+            <article class="task-card" id="task-14"><div class="task-heading"><span>Task 14</span><h3>Behavior Reduction Option</h3></div><p>Demonstrate antecedent intervention, differential reinforcement, or extinction.</p><div class="learning-row"><div class="learning-box"><h4>Remember</h4><ul><li>Antecedent interventions happen before behavior.</li><li>Differential reinforcement strengthens selected behavior patterns.</li><li>Extinction withholds the maintaining reinforcer.</li></ul></div><div class="learning-box example"><h4>Example</h4><p>Reinforcing hand raising instead of calling out is DRA.</p></div><div class="learning-box watch"><h4>Watch Out</h4><p>Ignoring is not extinction unless attention is the maintaining reinforcer and safety is addressed.</p></div></div><div class="callout">Quick check: Are we changing what happens before, what gets reinforced, or what no longer gets reinforced?</div></article>
+          </div>
+        </section>
+
+        <section class="section" id="professionalism">
+          <div class="section-header">
+            <h2>Professionalism and Requirements</h2>
+            <p>
+              These tasks focus on objective documentation, dignity, boundaries, supervision, and knowing when to seek
+              clinical direction.
+            </p>
+          </div>
+          <div class="task-grid">
+            <article class="task-card" id="task-15"><div class="task-heading"><span>Task 15</span><h3>Session Notes</h3></div><p>Write objective notes about what happened in session.</p><div class="learning-row"><div class="learning-box"><h4>Remember</h4><ul><li>Use observable language.</li><li>Include relevant data and events.</li><li>Avoid opinions and labels.</li></ul></div><div class="learning-box example"><h4>Example</h4><p>"Learner completed 8 of 10 matching trials independently."</p></div><div class="learning-box watch"><h4>Watch Out</h4><p>"Learner was lazy" is subjective and disrespectful.</p></div></div><div class="callout">Quick check: If the note includes a judgment, replace it with what happened.</div></article>
+            <article class="task-card" id="task-16"><div class="task-heading"><span>Task 16</span><h3>Client Dignity</h3></div><p>Protect privacy, choice, respect, and age-appropriate communication.</p><div class="learning-row"><div class="learning-box"><h4>Remember</h4><ul><li>Use respectful tone.</li><li>Protect privacy.</li><li>Offer choices when available.</li><li>Speak about clients respectfully.</li></ul></div><div class="learning-box example"><h4>Example</h4><p>Discussing behavior privately instead of in a hallway protects dignity.</p></div><div class="learning-box watch"><h4>Watch Out</h4><p>Baby talk with an adolescent is not age-appropriate.</p></div></div><div class="callout">Quick check: Would this still feel respectful if the client or family heard it?</div></article>
+            <article class="task-card" id="task-17"><div class="task-heading"><span>Task 17</span><h3>Professional Boundaries</h3></div><p>Keep communication and relationships within the therapy role.</p><div class="learning-row"><div class="learning-box"><h4>Remember</h4><ul><li>Use professional communication.</li><li>Avoid dual relationships.</li><li>Handle gifts through policy and supervision.</li><li>Redirect irrelevant personal conversations.</li></ul></div><div class="learning-box example"><h4>Example</h4><p>Decline a personal gift respectfully and notify the supervisor.</p></div><div class="learning-box watch"><h4>Watch Out</h4><p>Adding a caregiver on personal social media creates boundary risk.</p></div></div><div class="callout">Quick check: If the relationship extends outside therapy, pause and ask.</div></article>
+            <article class="task-card" id="task-18"><div class="task-heading"><span>Task 18</span><h3>Supervision Requirements</h3></div><p>Know core supervision expectations and verify current standards.</p><div class="learning-row"><div class="learning-box"><h4>Remember</h4><ul><li>At least 5 percent of service hours are supervised each month.</li><li>At least two face-to-face live meetings occur monthly.</li><li>At least one monthly observation occurs while services are provided.</li></ul></div><div class="learning-box example"><h4>Example</h4><p>If you provide 80 service hours, 5 percent is 4 supervised hours.</p></div><div class="learning-box watch"><h4>Watch Out</h4><p>Casual messages alone do not replace required live supervision contacts.</p></div></div><div class="callout">Quick check: Know the numbers, but verify official requirements.</div></article>
+            <article class="task-card" id="task-19"><div class="task-heading"><span>Task 19</span><h3>Clinical Direction</h3></div><p>Seek supervisor guidance before changing procedures or handling unclear situations independently.</p><div class="learning-row"><div class="learning-box"><h4>Remember</h4><ul><li>Ask about new or unclear goals.</li><li>Ask about challenging behavior or safety concerns.</li><li>Refer parent requests outside the plan.</li><li>Pause for ethical uncertainty.</li></ul></div><div class="learning-box example"><h4>Example</h4><p>A parent asks you to add toilet training. You acknowledge the request and tell the supervisor.</p></div><div class="learning-box watch"><h4>Watch Out</h4><p>Changing reinforcement schedules on your own is outside the RBT role.</p></div></div><div class="callout">Quick check: If the next step changes the plan, affects safety, or raises ethics concerns, seek direction.</div></article>
+          </div>
+        </section>
+
+        <footer>
+          This guide uses original wording for learning and practice. It is not official guidance, does not replace
+          supervision, and should be checked against current official materials before use in assessment preparation.
+        </footer>
+      </main>
+    </div>
+    <script>
+      const sectionLinks = Array.from(document.querySelectorAll(".side-nav a[href^='#']"));
+      const guideSections = sectionLinks
+        .map((link) => document.querySelector(link.getAttribute("href")))
+        .filter(Boolean);
+
+      function setActiveSection(sectionId) {
+        sectionLinks.forEach((link) => {
+          const isActive = link.getAttribute("href") === `#${sectionId}`;
+          link.classList.toggle("is-active", isActive);
+          if (isActive) {
+            link.setAttribute("aria-current", "true");
+          } else {
+            link.removeAttribute("aria-current");
+          }
+        });
+      }
+
+      function updateActiveSection() {
+        const activationLine = window.innerHeight * 0.35;
+        const currentSection =
+          guideSections
+            .filter((section) => section.getBoundingClientRect().top <= activationLine)
+            .pop() ?? guideSections[0];
+
+        if (currentSection) {
+          setActiveSection(currentSection.id);
+        }
+      }
+
+      let pendingActiveUpdate = false;
+      window.addEventListener("scroll", () => {
+        if (pendingActiveUpdate) {
+          return;
+        }
+
+        pendingActiveUpdate = true;
+        window.requestAnimationFrame(() => {
+          updateActiveSection();
+          pendingActiveUpdate = false;
+        });
+      });
+
+      window.addEventListener("resize", updateActiveSection);
+      window.addEventListener("hashchange", updateActiveSection);
+      sectionLinks.forEach((link) => link.addEventListener("click", () => setActiveSection(link.hash.slice(1))));
+      updateActiveSection();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,15 @@
+{
+  "name": "RBT Practice Hub",
+  "short_name": "RBT Hub",
+  "description": "Independent RBT Initial Competency Assessment practice study app.",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "theme_color": "#0f8b8d",
+  "background_color": "#ffffff",
+  "display": "standalone"
+}
