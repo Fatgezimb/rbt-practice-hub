@@ -2,6 +2,10 @@
 
 RBT Practice Hub is a clean static study app for practicing RBT Initial Competency Assessment skills. It is built with React, Vite, TypeScript, and localStorage. It does not require a backend.
 
+Live site: https://fatgezimb.github.io/rbt-practice-hub/
+
+Repository: https://github.com/Fatgezimb/rbt-practice-hub
+
 ## Disclaimer
 
 This is an independent learning resource, not an official BACB product. It does not replace the official assessment packet, assessor judgment, employer policy, supervision requirements, or BACB requirements. The app does not use BACB logos, Quizlet branding, copied Quizlet content, or copied third-party flashcard wording.
