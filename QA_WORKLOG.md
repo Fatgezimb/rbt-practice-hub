@@ -88,6 +88,16 @@ This file tracks the current implementation/QA sequence so work can resume clean
 - Official packet comparison verified task names and assessment type options; task 14 title/description was updated to reflect the packet's three behavior-reduction options.
 - Deployment workflow shows GitHub Actions Node runtime deprecation warnings, but the build and deploy jobs pass.
 
+## Official Packet Audit: Tasks 1-5
+
+Status: completed review, pending user approval to move to tasks 6-11.
+
+- Official PDF source checked: tasks 1-5 and assessment types match the app.
+- Source limitation: `RBT_Comp_Study_Guide.docx` and its PDF copy appear image-based with no extractable text in local parsers; this audit used the official packet text plus the current learner guide content already built from the study-guide concepts.
+- Required changes: none found for tasks 1-5.
+- Optional polish only: add a small note that permanent product is a supplemental measurement concept in this app, while official task 3 specifically says data entry and graph updates; add one more hands-on graph/date/unit data-entry prompt if we want extra Task 3 practice later.
+
 ## Notes
 
 - Current priority: official packet audit in batches. Start with tasks 1-5, report findings, and wait for approval before implementing content changes.
+- Current active audit batch: tasks 1-5 only. Do not implement audit findings until the user approves the proposed changes.
