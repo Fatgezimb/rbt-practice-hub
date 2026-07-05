@@ -57,25 +57,37 @@ This file tracks the current implementation/QA sequence so work can resume clean
 
 ## Final QA Checklist
 
-- [ ] `npm install` works.
-- [ ] `npm run dev` works.
-- [ ] `npm run build` works.
-- [ ] GitHub Pages deployment works as a public site and URL is provided.
-- [ ] All routes work after refresh.
-- [ ] Sidebar works on desktop/mobile/tablet.
-- [ ] Progress drawer works on mobile/tablet.
-- [ ] Flashcard count makes sense.
-- [ ] Question count is >= 190.
-- [ ] Study guide opens correctly and is complete.
-- [ ] No BACB logo is used.
-- [ ] No Quizlet branding or copied Quizlet content appears.
-- [ ] Disclaimer appears in footer and About page.
-- [ ] Task names and assessment types match the BACB competency PDF.
-- [ ] Client-demonstration reminder appears in the right places.
+- [x] `npm install` works.
+- [x] `npm run dev` works.
+- [x] `npm run build` works.
+- [x] GitHub Pages deployment works as a public site and URL is provided.
+- [x] All routes work after refresh.
+- [x] Sidebar works on desktop/mobile/tablet.
+- [x] Progress drawer works on mobile/tablet.
+- [x] Flashcard count makes sense.
+- [x] Question count is >= 190.
+- [x] Study guide opens correctly and is complete.
+- [x] No BACB logo is used.
+- [x] No Quizlet branding or copied Quizlet content appears.
+- [x] Disclaimer appears in footer and About page.
+- [x] Task names and assessment types match the BACB competency PDF.
+- [x] Client-demonstration reminder appears in the right places.
 - [x] Question/flashcard correct and incorrect attempt history tracks count and Date/Time.
 - [x] Guide opens and reviewed state track count and Date/Time.
-- [ ] README updated.
+- [x] README updated.
+
+## Final QA Results
+
+- Live site: https://fatgezimb.github.io/rbt-practice-hub/
+- Repository: https://github.com/Fatgezimb/rbt-practice-hub
+- `npm install`, `npm run dev -- --host 127.0.0.1 --port 5183 --strictPort`, and `npm run build` passed.
+- Public Pages workflow succeeded after enabling GitHub Pages for the new repo.
+- Public React routes verified: Home, Flashcards, Practice, and Study Guide.
+- Static assets verified with HTTP 200 responses: study guide PDF, official packet PDF, HTML study guide, favicon, and manifest.
+- Counts verified: 105 flashcards, 190 practice questions, 4 guide sections.
+- Official packet comparison verified task names and assessment type options; task 14 title/description was updated to reflect the packet's three behavior-reduction options.
+- Deployment workflow shows GitHub Actions Node runtime deprecation warnings, but the build and deploy jobs pass.
 
 ## Notes
 
-- Current priority: final QA pass and README update. Do not start the official task audit until final QA/README work is done.
+- Current priority: official packet audit in batches. Start with tasks 1-5, report findings, and wait for approval before implementing content changes.
