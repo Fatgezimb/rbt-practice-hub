@@ -22,9 +22,9 @@ function formatTimestamp(timestamp: string | undefined) {
 
 export function ProgressReviewPage() {
   const { clientDemonstrationSummary, progress, summary, resetProgress } = useProgress();
-  const missedQuestions = useMemo(
-    () => practiceQuestions.filter((question) => progress.questions[question.id] === "incorrect"),
-    [progress.questions],
+  const retryQuestions = useMemo(
+    () => practiceQuestions.filter((question) => progress.questions[question.id] === "incorrect" || progress.questionReviews[question.id]),
+    [progress.questionReviews, progress.questions],
   );
   const recentQuestionAttempt = useMemo(
     () =>
@@ -143,7 +143,7 @@ export function ProgressReviewPage() {
             <dd>{summary.questionsCorrect}</dd>
           </div>
           <div>
-            <dt>Missed</dt>
+            <dt>Incorrect</dt>
             <dd>{summary.questionsIncorrect}</dd>
           </div>
           <div>
@@ -155,7 +155,7 @@ export function ProgressReviewPage() {
             <dd>{summary.questionCorrectAttempts}</dd>
           </div>
           <div>
-            <dt>Total missed attempts</dt>
+            <dt>Total incorrect attempts</dt>
             <dd>{summary.questionIncorrectAttempts}</dd>
           </div>
           <div>
@@ -228,21 +228,21 @@ export function ProgressReviewPage() {
       <section className="panel missed-review-panel">
         <div className="review-panel-header">
           <div>
-            <h2>Missed question retry</h2>
+            <h2>Question retry</h2>
             <p>
-              {missedQuestions.length > 0
-                ? `${missedQuestions.length} missed question${missedQuestions.length === 1 ? "" : "s"} ready to retry.`
-                : "No missed questions are currently marked."}
+              {retryQuestions.length > 0
+                ? `${retryQuestions.length} incorrect or review question${retryQuestions.length === 1 ? "" : "s"} ready to retry.`
+                : "No incorrect or review questions are currently marked."}
             </p>
           </div>
           <Link className="retry-link" to="/practice?review=missed">
             <ClipboardList size={18} aria-hidden="true" />
-            Retry missed
+            Retry questions
           </Link>
         </div>
-        {missedQuestions.length > 0 ? (
+        {retryQuestions.length > 0 ? (
           <div className="missed-review-list">
-            {missedQuestions.map((question) => (
+            {retryQuestions.map((question) => (
               <Link
                 className="missed-review-card"
                 to={`/practice?review=missed&question=${question.id}`}
@@ -259,7 +259,7 @@ export function ProgressReviewPage() {
         ) : (
           <div className="empty-review-state">
             <ClipboardList size={34} aria-hidden="true" />
-            <p>Questions marked incorrect from the practice bank will appear here for focused retry.</p>
+            <p>Questions marked incorrect or flagged for review from the practice bank will appear here for focused retry.</p>
           </div>
         )}
       </section>

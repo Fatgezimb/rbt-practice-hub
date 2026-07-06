@@ -101,3 +101,35 @@ Status: completed review, pending user approval to move to tasks 6-11.
 
 - Current priority: official packet audit in batches. Start with tasks 1-5, report findings, and wait for approval before implementing content changes.
 - Current active audit batch: tasks 1-5 only. Do not implement audit findings until the user approves the proposed changes.
+
+## Current UI Progress Request
+
+Status: completed locally; ready for final QA/deploy.
+
+- [x] Add persistent known/needs-review visual color and short text animation for flashcard marking.
+- [x] Add manual way to remove/clear a flashcard mark.
+- [x] Show consistent question states while task-filtered: Correct, Review, Incorrect, Not attempted.
+- [x] Make task completion obvious when all questions in a filtered task are finished.
+- [x] Automatically mark task practice ready when all questions for that task are correct, no questions are marked review, and all flashcards for that task are known.
+- [x] Add Competency Map practice-depth counts: question passes, flashcard known passes, practice days, section guide opens, and links to section guide.
+- [x] Show the ideal target of 3 passes over 5 days without blocking the simpler automatic ready rule.
+
+## Current UI Progress Results
+
+- Flashcards: Known and Needs Review now animate briefly and keep a persistent color state until changed or cleared.
+- Flashcards: Added Clear Mark and verified keyboard shortcuts: Space flips, arrow keys move, 1 marks review, 2 marks known.
+- Practice: Single-answer questions now require selecting an answer and pressing Check Answer; answers are no longer submitted by default on click.
+- Practice: Task-filtered view shows Correct, Review, Incorrect, and Not attempted state buttons, plus a completion message for the filtered task.
+- Sidebar: task question counts now use the same four-state language and icons.
+- Competency Map: manual task status dropdown was replaced by automatic practice-readiness evidence and section study-guide links.
+- Study Guide: `/guide?section=...` opens the correct section modal and increments section guide-open tracking.
+- Browser QA: Chrome/Playwright verified flashcard state colors, practice selection/check flow, review state, automatic Task 1 readiness after saved progress reload, guide done after three opens, mobile practice/map overflow, and keyboard shortcuts.
+
+## Current Final QA Refresh
+
+- `npm install` passed with 0 vulnerabilities.
+- `npm run build` passed.
+- `npm run dev -- --host 127.0.0.1 --port 5184 --strictPort` started successfully and returned HTTP 200 for the app shell.
+- Local asset checks returned HTTP 200 for the study guide PDF, favicon, and manifest.
+- Count check passed: 105 flashcards, 190 questions, 19 competency tasks.
+- Branding/disclaimer scan found only permitted disclaimer/documentation references and no Quizlet branding.

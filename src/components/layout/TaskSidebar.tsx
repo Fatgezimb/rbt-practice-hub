@@ -57,8 +57,8 @@ export function TaskSidebarContent({ onNavigate, onToggleCollapsed }: TaskSideba
   const { progress } = useProgress();
   const questionProgressByTask = useMemo(
     () =>
-      practiceQuestions.reduce<Record<number, { total: number; correct: number; incorrect: number; needsReview: number }>>((counts, question) => {
-        const taskCounts = counts[question.taskNumber] ?? { total: 0, correct: 0, incorrect: 0, needsReview: 0 };
+      practiceQuestions.reduce<Record<number, { total: number; correct: number; incorrect: number; needsReview: number; notAttempted: number }>>((counts, question) => {
+        const taskCounts = counts[question.taskNumber] ?? { total: 0, correct: 0, incorrect: 0, needsReview: 0, notAttempted: 0 };
         const status = progress.questions[question.id] ?? "not-started";
 
         counts[question.taskNumber] = {
@@ -66,6 +66,7 @@ export function TaskSidebarContent({ onNavigate, onToggleCollapsed }: TaskSideba
           correct: taskCounts.correct + (status === "correct" ? 1 : 0),
           incorrect: taskCounts.incorrect + (status === "incorrect" ? 1 : 0),
           needsReview: taskCounts.needsReview + (progress.questionReviews[question.id] ? 1 : 0),
+          notAttempted: taskCounts.notAttempted + (status === "not-started" ? 1 : 0),
         };
 
         return counts;
@@ -122,18 +123,21 @@ export function TaskSidebarContent({ onNavigate, onToggleCollapsed }: TaskSideba
                             {questionCounts.correct}
                             <span className="sr-only"> correct</span>
                           </span>
-                          <span className="question-progress-pill is-missed">
+                          <span className="question-progress-pill is-review">
+                            <AlertTriangle size={12} aria-hidden="true" />
+                            {questionCounts.needsReview}
+                            <span className="sr-only"> review</span>
+                          </span>
+                          <span className="question-progress-pill is-incorrect">
                             <X size={12} aria-hidden="true" />
                             {questionCounts.incorrect}
-                            <span className="sr-only"> missed</span>
+                            <span className="sr-only"> incorrect</span>
                           </span>
-                          {questionCounts.needsReview > 0 ? (
-                            <span className="question-progress-pill is-review">
-                              <AlertTriangle size={12} aria-hidden="true" />
-                              {questionCounts.needsReview}
-                              <span className="sr-only"> marked for review</span>
-                            </span>
-                          ) : null}
+                          <span className="question-progress-pill is-not-attempted">
+                            <Circle size={12} aria-hidden="true" />
+                            {questionCounts.notAttempted}
+                            <span className="sr-only"> not attempted</span>
+                          </span>
                         </span>
                       ) : null}
                     </span>

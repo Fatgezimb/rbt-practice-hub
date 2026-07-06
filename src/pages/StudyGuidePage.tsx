@@ -1,5 +1,6 @@
 import { BookOpen, Download, ExternalLink, FileText, Lightbulb, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { MemoryAidVisual } from "../components/memoryAids/MemoryAidVisual";
 import { memoryAids } from "../data/memoryAids";
 import {
@@ -17,6 +18,8 @@ import type { StudyGuideSection } from "../types";
 
 export function StudyGuidePage() {
   const { markGuideOpened, markGuideReviewed, progress } = useProgress();
+  const location = useLocation();
+  const lastOpenedSectionParam = useRef<string | null>(null);
   const [selectedSection, setSelectedSection] = useState<StudyGuideSection | null>(null);
   const [selectedVisualId, setSelectedVisualId] = useState<MemoryAidVisualId | null>(null);
   const selectedVisual = selectedVisualId ? getMemoryAidVisualById(selectedVisualId) : undefined;
@@ -27,6 +30,22 @@ export function StudyGuidePage() {
     setSelectedSection(section);
     markGuideOpened(section.id);
   }
+
+  useEffect(() => {
+    const sectionId = new URLSearchParams(location.search).get("section");
+    const section = studyGuideSections.find((guideSection) => guideSection.id === sectionId);
+
+    if (!section) {
+      return;
+    }
+
+    setSelectedSection(section);
+
+    if (lastOpenedSectionParam.current !== section.id) {
+      lastOpenedSectionParam.current = section.id;
+      markGuideOpened(section.id);
+    }
+  }, [location.search, markGuideOpened]);
 
   useEffect(() => {
     if (!selectedSection && !selectedVisualId) {

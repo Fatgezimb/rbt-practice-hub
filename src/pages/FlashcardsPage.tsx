@@ -71,7 +71,7 @@ function isNumberShortcut(event: KeyboardEvent, numberKey: "1" | "2") {
 }
 
 export function FlashcardsPage() {
-  const { markFlashcardKnown, markFlashcardNeedsReview, progress, summary } = useProgress();
+  const { clearFlashcardStatus, markFlashcardKnown, markFlashcardNeedsReview, progress, summary } = useProgress();
   const [selectedCardId, setSelectedCardId] = useState<string | undefined>(flashcards[0]?.id);
   const [query, setQuery] = useState("");
   const [sectionFilter, setSectionFilter] = useState<CompetencySection | "all">("all");
@@ -82,6 +82,7 @@ export function FlashcardsPage() {
   const [cardMode, setCardMode] = useState<CardMode>("normal");
   const [shuffleSeed, setShuffleSeed] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
+  const [lastMarkedCard, setLastMarkedCard] = useState<{ id: string; status: FlashcardStatus } | null>(null);
 
   const deckCounts = useMemo(
     () =>
@@ -157,6 +158,16 @@ export function FlashcardsPage() {
   const selectedCard = filteredCards.find((card) => card.id === selectedCardId) ?? filteredCards[0];
   const selectedIndex = selectedCard ? filteredCards.findIndex((card) => card.id === selectedCard.id) : -1;
   const selectedCardVisuals = selectedCard ? getMemoryAidVisualsForFlashcard(selectedCard).slice(0, 2) : [];
+  const selectedCardStatus = selectedCard ? progress.flashcards[selectedCard.id] ?? "not-started" : "not-started";
+
+  useEffect(() => {
+    if (!lastMarkedCard) {
+      return;
+    }
+
+    const timeout = window.setTimeout(() => setLastMarkedCard(null), 900);
+    return () => window.clearTimeout(timeout);
+  }, [lastMarkedCard]);
 
   function goToCard(nextIndex: number) {
     const nextCard = filteredCards[nextIndex];
@@ -165,6 +176,21 @@ export function FlashcardsPage() {
     }
     setSelectedCardId(nextCard.id);
     setIsFlipped(false);
+  }
+
+  function markCardKnown(cardId: string) {
+    markFlashcardKnown(cardId);
+    setLastMarkedCard({ id: cardId, status: "known" });
+  }
+
+  function markCardNeedsReview(cardId: string) {
+    markFlashcardNeedsReview(cardId);
+    setLastMarkedCard({ id: cardId, status: "needs-review" });
+  }
+
+  function clearCardMark(cardId: string) {
+    clearFlashcardStatus(cardId);
+    setLastMarkedCard(null);
   }
 
   useEffect(() => {
@@ -201,19 +227,19 @@ export function FlashcardsPage() {
 
       if (isNumberShortcut(event, "1")) {
         event.preventDefault();
-        markFlashcardNeedsReview(selectedCard.id);
+        markCardNeedsReview(selectedCard.id);
         return;
       }
 
       if (isNumberShortcut(event, "2")) {
         event.preventDefault();
-        markFlashcardKnown(selectedCard.id);
+        markCardKnown(selectedCard.id);
       }
     }
 
     window.addEventListener("keydown", handleFlashcardShortcuts);
     return () => window.removeEventListener("keydown", handleFlashcardShortcuts);
-  }, [filteredCards, markFlashcardKnown, markFlashcardNeedsReview, selectedCard, selectedIndex]);
+  }, [filteredCards, markCardKnown, markCardNeedsReview, selectedCard, selectedIndex]);
 
   function clearFilters() {
     setQuery("");
@@ -390,15 +416,22 @@ export function FlashcardsPage() {
           {selectedCard ? (
             <>
               <button
-                className={isFlipped ? "seed-card is-flipped" : "seed-card"}
+                className={[
+                  "seed-card",
+                  `status-${selectedCardStatus}`,
+                  isFlipped ? "is-flipped" : "",
+                  lastMarkedCard?.id === selectedCard.id ? "is-status-animated" : "",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
                 type="button"
                 onClick={() => setIsFlipped((value) => !value)}
                 aria-keyshortcuts="Space"
                 title="Flip card"
               >
-                <span className="seed-label">
+                <span className={`seed-label flashcard-status-label status-${selectedCardStatus}`}>
                   Task {selectedCard.taskNumber} · {cardTypeLabels[selectedCard.cardType]} ·{" "}
-                  {statusLabels[progress.flashcards[selectedCard.id] ?? "not-started"]}
+                  {statusLabels[selectedCardStatus]}
                 </span>
                 <h2>{isFlipped ? selectedCard.back : selectedCard.front}</h2>
                 {isFlipped ? (
@@ -464,7 +497,8 @@ export function FlashcardsPage() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => markFlashcardNeedsReview(selectedCard.id)}
+                  className={selectedCardStatus === "needs-review" ? "status-action is-review" : undefined}
+                  onClick={() => markCardNeedsReview(selectedCard.id)}
                   aria-keyshortcuts="1"
                   title="Mark needs review"
                 >
@@ -472,17 +506,33 @@ export function FlashcardsPage() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => markFlashcardKnown(selectedCard.id)}
+                  className={selectedCardStatus === "known" ? "status-action is-known" : undefined}
+                  onClick={() => markCardKnown(selectedCard.id)}
                   aria-keyshortcuts="2"
                   title="Mark known"
                 >
                   Mark Known
                 </button>
+                <button
+                  type="button"
+                  onClick={() => clearCardMark(selectedCard.id)}
+                  disabled={selectedCardStatus === "not-started"}
+                  title="Clear known or needs-review mark"
+                >
+                  Clear Mark
+                </button>
               </div>
               <div className={cardMode === "mini" ? "seed-list mini-card-grid" : "seed-list"} aria-label="Filtered flashcards">
                 {filteredCards.map((card) => (
                   <button
-                    className={card.id === selectedCard.id ? "seed-list-item is-selected" : "seed-list-item"}
+                    className={[
+                      "seed-list-item",
+                      `status-${progress.flashcards[card.id] ?? "not-started"}`,
+                      card.id === selectedCard.id ? "is-selected" : "",
+                      lastMarkedCard?.id === card.id ? "is-status-animated" : "",
+                    ]
+                      .filter(Boolean)
+                      .join(" ")}
                     type="button"
                     onClick={() => {
                       setSelectedCardId(card.id);

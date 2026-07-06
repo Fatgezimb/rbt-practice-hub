@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight, ClipboardList, Flag } from "lucide-react";
+import { AlertTriangle, Check, ChevronLeft, ChevronRight, Circle, ClipboardList, Flag, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { sectionOrder } from "../data/competencyTasks";
@@ -17,10 +17,13 @@ const questionTypeLabels: Record<QuestionType, string> = {
   "true-false": "True / false",
 };
 
-const statusLabels: Record<QuestionStatus, string> = {
+type QuestionViewState = "correct" | "review" | "incorrect" | "not-attempted";
+
+const questionStateLabels: Record<QuestionViewState, string> = {
   correct: "Correct",
-  incorrect: "Missed",
-  "not-started": "Not started",
+  review: "Review",
+  incorrect: "Incorrect",
+  "not-attempted": "Not attempted",
 };
 
 const difficultyLabels: Record<Difficulty, string> = {
@@ -133,14 +136,16 @@ function matchesQuestion(
   question: PracticeQuestion,
   filters: QuestionFilters,
   questionProgress: Record<string, QuestionStatus>,
+  questionReviews: Record<string, boolean>,
 ) {
   const status = questionProgress[question.id] ?? "not-started";
+  const markedForReview = questionReviews[question.id] ?? false;
 
   return (
     (filters.taskFilter === "all" || question.taskNumber === filters.taskFilter) &&
     (filters.sectionFilter === "all" || question.section === filters.sectionFilter) &&
     (filters.difficultyFilter === "all" || question.difficulty === filters.difficultyFilter) &&
-    (!filters.missedOnly || status === "incorrect")
+    (!filters.missedOnly || status === "incorrect" || markedForReview)
   );
 }
 
@@ -154,8 +159,41 @@ function shouldIgnoreQuestionArrowTarget(target: EventTarget | null) {
   );
 }
 
+function getQuestionViewState(
+  question: PracticeQuestion,
+  questionProgress: Record<string, QuestionStatus>,
+  questionReviews: Record<string, boolean>,
+): QuestionViewState {
+  if (questionReviews[question.id]) {
+    return "review";
+  }
+
+  const status = questionProgress[question.id] ?? "not-started";
+  if (status === "correct" || status === "incorrect") {
+    return status;
+  }
+
+  return "not-attempted";
+}
+
+function renderQuestionStateIcon(state: QuestionViewState) {
+  if (state === "correct") {
+    return <Check size={15} aria-hidden="true" />;
+  }
+
+  if (state === "review") {
+    return <AlertTriangle size={15} aria-hidden="true" />;
+  }
+
+  if (state === "incorrect") {
+    return <X size={15} aria-hidden="true" />;
+  }
+
+  return <Circle size={15} aria-hidden="true" />;
+}
+
 export function PracticeQuestionsPage() {
-  const { markQuestionCorrect, markQuestionIncorrect, markQuestionNeedsReview, progress, summary } = useProgress();
+  const { markQuestionCorrect, markQuestionIncorrect, progress, setQuestionReviewStatus, summary } = useProgress();
   const location = useLocation();
   const initialSearchParams = useMemo(() => new URLSearchParams(location.search), [location.search]);
   const questionPanelRef = useRef<HTMLElement | null>(null);
@@ -175,8 +213,21 @@ export function PracticeQuestionsPage() {
   );
 
   const filteredQuestions = useMemo(
-    () => practiceQuestions.filter((question) => matchesQuestion(question, filters, progress.questions)),
-    [filters, progress.questions],
+    () => practiceQuestions.filter((question) => matchesQuestion(question, filters, progress.questions, progress.questionReviews)),
+    [filters, progress.questionReviews, progress.questions],
+  );
+
+  const filteredQuestionStateCounts = useMemo(
+    () =>
+      filteredQuestions.reduce(
+        (counts, question) => {
+          const state = getQuestionViewState(question, progress.questions, progress.questionReviews);
+          counts[state] += 1;
+          return counts;
+        },
+        { correct: 0, review: 0, incorrect: 0, "not-attempted": 0 } as Record<QuestionViewState, number>,
+      ),
+    [filteredQuestions, progress.questionReviews, progress.questions],
   );
 
   function scrollToQuestionPanel() {
@@ -186,7 +237,7 @@ export function PracticeQuestionsPage() {
   }
 
   function firstQuestionFor(nextFilters: QuestionFilters) {
-    return practiceQuestions.find((question) => matchesQuestion(question, nextFilters, progress.questions));
+    return practiceQuestions.find((question) => matchesQuestion(question, nextFilters, progress.questions, progress.questionReviews));
   }
 
   useEffect(() => {
@@ -232,9 +283,16 @@ export function PracticeQuestionsPage() {
   const displayedChoiceIds = checkedChoiceIds ?? selectedChoiceIds;
   const checkedAnswerIsCorrect =
     selectedQuestion && checkedChoiceIds ? answersMatch(checkedChoiceIds, correctAnswerIds(selectedQuestion)) : false;
-  const selectedQuestionStatus = selectedQuestion ? progress.questions[selectedQuestion.id] ?? "not-started" : "not-started";
   const selectedQuestionMarkedForReview = selectedQuestion ? progress.questionReviews[selectedQuestion.id] ?? false : false;
-  const selectedQuestionNeedsManualCheck = selectedQuestion?.questionType === "select-all";
+  const selectedQuestionState = selectedQuestion
+    ? getQuestionViewState(selectedQuestion, progress.questions, progress.questionReviews)
+    : "not-attempted";
+  const taskFilteredSetFinished = taskFilter !== "all" && filteredQuestions.length > 0 && filteredQuestionStateCounts["not-attempted"] === 0;
+  const taskFilteredSetPerfect =
+    taskFilteredSetFinished &&
+    filteredQuestionStateCounts.correct === filteredQuestions.length &&
+    filteredQuestionStateCounts.review === 0 &&
+    filteredQuestionStateCounts.incorrect === 0;
 
   function goToQuestion(nextIndex: number) {
     const nextQuestion = filteredQuestions[nextIndex];
@@ -296,7 +354,10 @@ export function PracticeQuestionsPage() {
     }
 
     if (question.questionType !== "select-all") {
-      recordAnswer(question, [choiceId]);
+      setDraftAnswersByQuestion((current) => ({
+        ...current,
+        [question.id]: [choiceId],
+      }));
       return;
     }
 
@@ -364,7 +425,7 @@ export function PracticeQuestionsPage() {
       return;
     }
 
-    markQuestionNeedsReview(selectedQuestion.id);
+    setQuestionReviewStatus(selectedQuestion.id, !selectedQuestionMarkedForReview);
   }
 
   return (
@@ -384,7 +445,7 @@ export function PracticeQuestionsPage() {
           <strong>{summary.questionsCorrect}</strong> correct
         </span>
         <span>
-          <strong>{summary.questionsIncorrect}</strong> missed
+          <strong>{summary.questionsIncorrect}</strong> incorrect
         </span>
         <span>
           <strong>{summary.questionsNeedsReview}</strong> review
@@ -425,7 +486,7 @@ export function PracticeQuestionsPage() {
         </label>
         <label className="missed-toggle">
           <input type="checkbox" checked={missedOnly} onChange={(event) => setMissedOnly(event.target.checked)} />
-          <span>Missed questions only</span>
+          <span>Review or incorrect only</span>
         </label>
         <button className="filter-clear-button" type="button" onClick={clearFilters}>
           Clear
@@ -460,6 +521,62 @@ export function PracticeQuestionsPage() {
         </div>
       </details>
 
+      {taskFilter !== "all" && filteredQuestions.length > 0 ? (
+        <section className="task-question-progress-card" aria-label={`Task ${taskFilter} question states`}>
+          <div className="task-question-progress-heading">
+            <div>
+              <h2>Task {taskFilter} Questions</h2>
+              <p>
+                {taskFilteredSetPerfect
+                  ? `Complete: all ${filteredQuestions.length} questions are correct.`
+                  : taskFilteredSetFinished
+                    ? `Finished: review the ${filteredQuestionStateCounts.review + filteredQuestionStateCounts.incorrect} question${
+                        filteredQuestionStateCounts.review + filteredQuestionStateCounts.incorrect === 1 ? "" : "s"
+                      } that still need attention.`
+                    : `${filteredQuestionStateCounts["not-attempted"]} of ${filteredQuestions.length} question${
+                        filteredQuestionStateCounts["not-attempted"] === 1 ? "" : "s"
+                      } still not attempted.`}
+              </p>
+            </div>
+            <div className="task-question-state-summary">
+              {(Object.keys(questionStateLabels) as QuestionViewState[]).map((state) => (
+                <span className={`question-state-chip is-${state}`} key={state}>
+                  {renderQuestionStateIcon(state)}
+                  <strong>{filteredQuestionStateCounts[state]}</strong>
+                  {questionStateLabels[state]}
+                </span>
+              ))}
+            </div>
+          </div>
+          <div className="task-question-state-grid">
+            {filteredQuestions.map((question, index) => {
+              const state = getQuestionViewState(question, progress.questions, progress.questionReviews);
+              return (
+                <button
+                  className={[
+                    "question-state-button",
+                    `is-${state}`,
+                    question.id === selectedQuestion?.id ? "is-selected" : "",
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
+                  type="button"
+                  onClick={() => {
+                    setSelectedQuestionId(question.id);
+                    scrollToQuestionPanel();
+                  }}
+                  key={question.id}
+                >
+                  {renderQuestionStateIcon(state)}
+                  <span>Q{index + 1}</span>
+                  <strong>{questionStateLabels[state]}</strong>
+                </button>
+              );
+            })}
+          </div>
+        </section>
+      ) : null}
+
       <div className="practice-session-layout">
         {selectedQuestion ? (
           <section className="question-panel question-panel-wide" aria-label="Selected practice question" ref={questionPanelRef}>
@@ -467,7 +584,7 @@ export function PracticeQuestionsPage() {
               <ClipboardList size={24} aria-hidden="true" />
               <span>
                 {selectedIndex + 1} / {filteredQuestions.length} filtered · {summary.questionsCorrect} correct ·{" "}
-                {summary.questionsIncorrect} missed
+                {summary.questionsIncorrect} incorrect
               </span>
             </div>
             <div className="question-meta">
@@ -475,7 +592,10 @@ export function PracticeQuestionsPage() {
               <span>{selectedQuestion.section}</span>
               <span>{questionTypeLabels[selectedQuestion.questionType]}</span>
               <span>{difficultyLabels[selectedQuestion.difficulty]}</span>
-              <span>{statusLabels[selectedQuestionStatus]}</span>
+              <span className={`question-state-chip is-${selectedQuestionState}`}>
+                {renderQuestionStateIcon(selectedQuestionState)}
+                {questionStateLabels[selectedQuestionState]}
+              </span>
               {selectedQuestionMarkedForReview ? <span>Marked for review</span> : null}
             </div>
             <p className="scenario-text">{expandAcronyms(selectedQuestion.scenario)}</p>
@@ -546,13 +666,13 @@ export function PracticeQuestionsPage() {
               </button>
               <button type="button" onClick={markSelectedForReview}>
                 <Flag size={16} aria-hidden="true" />
-                {selectedQuestionMarkedForReview ? "Marked for Review" : "Mark for Review"}
+                {selectedQuestionMarkedForReview ? "Clear Review" : "Mark for Review"}
               </button>
               {answerChecked ? (
                 <button type="button" onClick={resetSelectedAnswer}>
                   Try Again
                 </button>
-              ) : !selectedQuestionNeedsManualCheck ? (
+              ) : selectedChoiceIds.length === 0 ? (
                 <button type="button" disabled>
                   Select an Answer
                 </button>
@@ -567,7 +687,7 @@ export function PracticeQuestionsPage() {
           <div className="placeholder-panel">
             <ClipboardList size={46} aria-hidden="true" />
             <h2>No questions match the current filters</h2>
-            <p>Clear filters or turn off missed-only review to return to the full question bank.</p>
+            <p>Clear filters or turn off review/incorrect filtering to return to the full question bank.</p>
           </div>
         )}
       </div>

@@ -4,6 +4,7 @@ import type { ClientDemonstrationProgress, ProgressSummary } from "../utils/prog
 import {
   calculateClientDemonstrationProgress,
   calculateProgress,
+  clearFlashcardStatus as clearFlashcardStatusInProgress,
   createInitialProgress,
   markFlashcardKnown as markFlashcardKnownInProgress,
   markFlashcardNeedsReview as markFlashcardNeedsReviewInProgress,
@@ -14,6 +15,7 @@ import {
   markQuestionNeedsReview as markQuestionNeedsReviewInProgress,
   normalizeProgress,
   setClientDemonstrationStatus,
+  setQuestionReviewStatus as setQuestionReviewStatusInProgress,
   setTaskProgressStatus,
 } from "../utils/progress";
 import type { FlashcardStatus, LearnerProgress, QuestionStatus, TaskStatus } from "../types";
@@ -28,8 +30,10 @@ interface ProgressContextValue {
   markQuestionCorrect: (questionId: string) => void;
   markQuestionIncorrect: (questionId: string) => void;
   markQuestionNeedsReview: (questionId: string) => void;
+  setQuestionReviewStatus: (questionId: string, needsReview: boolean) => void;
   markFlashcardKnown: (flashcardId: string) => void;
   markFlashcardNeedsReview: (flashcardId: string) => void;
+  clearFlashcardStatus: (flashcardId: string) => void;
   markGuideOpened: (guideId: string) => void;
   markGuideReviewed: (guideId: string) => void;
   resetProgress: () => void;
@@ -111,12 +115,20 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       updateProgress((current) => markQuestionNeedsReviewInProgress(current, questionId));
     }
 
+    function setQuestionReviewStatus(questionId: string, needsReview: boolean) {
+      updateProgress((current) => setQuestionReviewStatusInProgress(current, questionId, needsReview));
+    }
+
     function markFlashcardKnown(flashcardId: string) {
       updateProgress((current) => markFlashcardKnownInProgress(current, flashcardId));
     }
 
     function markFlashcardNeedsReview(flashcardId: string) {
       updateProgress((current) => markFlashcardNeedsReviewInProgress(current, flashcardId));
+    }
+
+    function clearFlashcardStatus(flashcardId: string) {
+      updateProgress((current) => clearFlashcardStatusInProgress(current, flashcardId));
     }
 
     function markGuideOpened(guideId: string) {
@@ -138,8 +150,10 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       markQuestionCorrect,
       markQuestionIncorrect,
       markQuestionNeedsReview,
+      setQuestionReviewStatus,
       markFlashcardKnown,
       markFlashcardNeedsReview,
+      clearFlashcardStatus,
       markGuideOpened,
       markGuideReviewed,
       resetProgress,

@@ -47,10 +47,41 @@ export interface ClientDemonstrationProgress {
   demonstratedTaskNumbers: number[];
 }
 
+export interface TaskPracticeSummary {
+  taskNumber: number;
+  totalQuestions: number;
+  correctQuestions: number;
+  incorrectQuestions: number;
+  reviewQuestions: number;
+  notAttemptedQuestions: number;
+  questionCorrectAttempts: number;
+  questionIncorrectAttempts: number;
+  questionPasses: number;
+  totalFlashcards: number;
+  knownFlashcards: number;
+  needsReviewFlashcards: number;
+  notStartedFlashcards: number;
+  flashcardKnownAttempts: number;
+  flashcardNeedsReviewAttempts: number;
+  flashcardPasses: number;
+  practiceDays: number;
+  guideId: string;
+  guideTitle: string;
+  guideOpenedCount: number;
+  guideReviewedCount: number;
+  guideDone: boolean;
+  allQuestionsCorrect: boolean;
+  allFlashcardsKnown: boolean;
+  autoReady: boolean;
+  idealReady: boolean;
+}
+
 const taskStatuses: TaskStatus[] = ["ready", "not-ready", "needs-review", "not-started"];
 const flashcardStatuses: FlashcardStatus[] = ["known", "needs-review", "not-started"];
 const questionStatuses: QuestionStatus[] = ["correct", "incorrect", "not-started"];
 const guideActivityIds = ["full-guide", ...studyGuideSections.map((section) => section.id)];
+const idealPassTarget = 3;
+const idealDayTarget = 5;
 
 function currentTimestamp() {
   return new Date().toISOString();
@@ -164,6 +195,142 @@ function normalizeGuideActivity(value: unknown): GuideActivity {
   };
 }
 
+function dateKey(timestamp: string) {
+  return timestamp.slice(0, 10);
+}
+
+function compactAttemptDates(timestamps: string[]) {
+  return new Set(timestamps.map(dateKey).filter(Boolean)).size;
+}
+
+export function getGuideSectionForTask(taskNumber: number) {
+  return studyGuideSections.find((section) => section.taskNumbers.includes(taskNumber)) ?? studyGuideSections[0];
+}
+
+function getMinimumPositiveAttemptCount(counts: number[]) {
+  if (counts.length === 0 || counts.some((count) => count === 0)) {
+    return 0;
+  }
+
+  return Math.min(...counts);
+}
+
+export function calculateTaskPracticeSummary(progress: LearnerProgress, taskNumber: number): TaskPracticeSummary {
+  const taskQuestions = practiceQuestions.filter((question) => question.taskNumber === taskNumber);
+  const taskFlashcards = flashcards.filter((card) => card.taskNumber === taskNumber);
+  const guide = getGuideSectionForTask(taskNumber);
+  const guideActivity = progress.guideActivity[guide.id] ?? createGuideActivity();
+
+  const correctQuestions = taskQuestions.filter((question) => progress.questions[question.id] === "correct").length;
+  const incorrectQuestions = taskQuestions.filter((question) => progress.questions[question.id] === "incorrect").length;
+  const reviewQuestions = taskQuestions.filter((question) => progress.questionReviews[question.id]).length;
+  const notAttemptedQuestions = taskQuestions.length - correctQuestions - incorrectQuestions;
+  const questionHistories = taskQuestions.map((question) => progress.questionAttempts[question.id] ?? createQuestionAttemptHistory());
+  const questionCorrectAttempts = questionHistories.reduce((total, history) => total + history.correctCount, 0);
+  const questionIncorrectAttempts = questionHistories.reduce((total, history) => total + history.incorrectCount, 0);
+  const questionPasses = getMinimumPositiveAttemptCount(questionHistories.map((history) => history.correctCount));
+
+  const knownFlashcards = taskFlashcards.filter((card) => progress.flashcards[card.id] === "known").length;
+  const needsReviewFlashcards = taskFlashcards.filter((card) => progress.flashcards[card.id] === "needs-review").length;
+  const notStartedFlashcards = taskFlashcards.length - knownFlashcards - needsReviewFlashcards;
+  const flashcardHistories = taskFlashcards.map((card) => progress.flashcardAttempts[card.id] ?? createFlashcardAttemptHistory());
+  const flashcardKnownAttempts = flashcardHistories.reduce((total, history) => total + history.knownCount, 0);
+  const flashcardNeedsReviewAttempts = flashcardHistories.reduce((total, history) => total + history.needsReviewCount, 0);
+  const flashcardPasses = getMinimumPositiveAttemptCount(flashcardHistories.map((history) => history.knownCount));
+
+  const practiceDays = compactAttemptDates([
+    ...questionHistories.flatMap((history) => history.attempts.map((attempt) => attempt.at)),
+    ...flashcardHistories.flatMap((history) => history.attempts.map((attempt) => attempt.at)),
+    ...guideActivity.openedAt,
+    ...guideActivity.reviewedAt,
+  ]);
+  const allQuestionsCorrect = taskQuestions.length > 0 && correctQuestions === taskQuestions.length && reviewQuestions === 0;
+  const allFlashcardsKnown = taskFlashcards.length > 0 && knownFlashcards === taskFlashcards.length;
+  const autoReady = allQuestionsCorrect && allFlashcardsKnown;
+  const guideDone = guideActivity.openedCount >= idealPassTarget;
+
+  return {
+    taskNumber,
+    totalQuestions: taskQuestions.length,
+    correctQuestions,
+    incorrectQuestions,
+    reviewQuestions,
+    notAttemptedQuestions,
+    questionCorrectAttempts,
+    questionIncorrectAttempts,
+    questionPasses,
+    totalFlashcards: taskFlashcards.length,
+    knownFlashcards,
+    needsReviewFlashcards,
+    notStartedFlashcards,
+    flashcardKnownAttempts,
+    flashcardNeedsReviewAttempts,
+    flashcardPasses,
+    practiceDays,
+    guideId: guide.id,
+    guideTitle: guide.title,
+    guideOpenedCount: guideActivity.openedCount,
+    guideReviewedCount: guideActivity.reviewedCount,
+    guideDone,
+    allQuestionsCorrect,
+    allFlashcardsKnown,
+    autoReady,
+    idealReady:
+      autoReady &&
+      questionPasses >= idealPassTarget &&
+      flashcardPasses >= idealPassTarget &&
+      practiceDays >= idealDayTarget &&
+      guideDone,
+  };
+}
+
+export function calculateTaskPracticeSummaries(progress: LearnerProgress) {
+  return Object.fromEntries(
+    competencyTasks.map((task) => [task.taskNumber, calculateTaskPracticeSummary(progress, task.taskNumber)]),
+  ) as Record<number, TaskPracticeSummary>;
+}
+
+function getAutomaticTaskStatus(progress: LearnerProgress, taskNumber: number): TaskStatus {
+  const summary = calculateTaskPracticeSummary(progress, taskNumber);
+
+  if (summary.autoReady) {
+    return "ready";
+  }
+
+  if (
+    summary.incorrectQuestions > 0 ||
+    summary.reviewQuestions > 0 ||
+    summary.needsReviewFlashcards > 0 ||
+    summary.questionIncorrectAttempts > 0 ||
+    summary.flashcardNeedsReviewAttempts > 0
+  ) {
+    return "needs-review";
+  }
+
+  if (
+    summary.correctQuestions > 0 ||
+    summary.knownFlashcards > 0 ||
+    summary.questionCorrectAttempts > 0 ||
+    summary.flashcardKnownAttempts > 0 ||
+    summary.guideOpenedCount > 0
+  ) {
+    return "not-ready";
+  }
+
+  return "not-started";
+}
+
+export function applyAutomaticTaskReadiness(progress: LearnerProgress): LearnerProgress {
+  const tasks = Object.fromEntries(
+    competencyTasks.map((task) => [task.taskNumber, getAutomaticTaskStatus(progress, task.taskNumber)]),
+  ) as ProgressByTask;
+
+  return {
+    ...progress,
+    tasks,
+  };
+}
+
 export function createInitialProgress(): LearnerProgress {
   return {
     version: 1,
@@ -196,7 +363,7 @@ export function normalizeProgress(raw: unknown): LearnerProgress {
         initial.tasks[task.taskNumber] = legacyStatus as TaskStatus;
       }
     });
-    return initial;
+    return applyAutomaticTaskReadiness(initial);
   }
 
   competencyTasks.forEach((task) => {
@@ -242,7 +409,7 @@ export function normalizeProgress(raw: unknown): LearnerProgress {
     initial.guideActivity[id] = normalizeGuideActivity(value.guideActivity?.[id]);
   });
 
-  return initial;
+  return applyAutomaticTaskReadiness(initial);
 }
 
 export function calculateProgress(progress: LearnerProgress, tasks: CompetencyTask[] = competencyTasks): ProgressSummary {
@@ -317,7 +484,7 @@ export function calculateClientDemonstrationProgress(
 export function markQuestionCorrect(progress: LearnerProgress, questionId: string): LearnerProgress {
   const history = progress.questionAttempts[questionId] ?? createQuestionAttemptHistory();
 
-  return {
+  return applyAutomaticTaskReadiness({
     ...progress,
     questions: {
       ...progress.questions,
@@ -331,13 +498,13 @@ export function markQuestionCorrect(progress: LearnerProgress, questionId: strin
         attempts: [...history.attempts, { result: "correct", at: currentTimestamp() }],
       },
     },
-  };
+  });
 }
 
 export function markQuestionIncorrect(progress: LearnerProgress, questionId: string): LearnerProgress {
   const history = progress.questionAttempts[questionId] ?? createQuestionAttemptHistory();
 
-  return {
+  return applyAutomaticTaskReadiness({
     ...progress,
     questions: {
       ...progress.questions,
@@ -351,23 +518,33 @@ export function markQuestionIncorrect(progress: LearnerProgress, questionId: str
         attempts: [...history.attempts, { result: "incorrect", at: currentTimestamp() }],
       },
     },
-  };
+  });
 }
 
 export function markQuestionNeedsReview(progress: LearnerProgress, questionId: string): LearnerProgress {
-  return {
+  return applyAutomaticTaskReadiness({
     ...progress,
     questionReviews: {
       ...progress.questionReviews,
       [questionId]: true,
     },
-  };
+  });
+}
+
+export function setQuestionReviewStatus(progress: LearnerProgress, questionId: string, needsReview: boolean): LearnerProgress {
+  return applyAutomaticTaskReadiness({
+    ...progress,
+    questionReviews: {
+      ...progress.questionReviews,
+      [questionId]: needsReview,
+    },
+  });
 }
 
 export function markFlashcardKnown(progress: LearnerProgress, flashcardId: string): LearnerProgress {
   const history = progress.flashcardAttempts[flashcardId] ?? createFlashcardAttemptHistory();
 
-  return {
+  return applyAutomaticTaskReadiness({
     ...progress,
     flashcards: {
       ...progress.flashcards,
@@ -381,13 +558,13 @@ export function markFlashcardKnown(progress: LearnerProgress, flashcardId: strin
         attempts: [...history.attempts, { result: "known", at: currentTimestamp() }],
       },
     },
-  };
+  });
 }
 
 export function markFlashcardNeedsReview(progress: LearnerProgress, flashcardId: string): LearnerProgress {
   const history = progress.flashcardAttempts[flashcardId] ?? createFlashcardAttemptHistory();
 
-  return {
+  return applyAutomaticTaskReadiness({
     ...progress,
     flashcards: {
       ...progress.flashcards,
@@ -401,7 +578,17 @@ export function markFlashcardNeedsReview(progress: LearnerProgress, flashcardId:
         attempts: [...history.attempts, { result: "needs-review", at: currentTimestamp() }],
       },
     },
-  };
+  });
+}
+
+export function clearFlashcardStatus(progress: LearnerProgress, flashcardId: string): LearnerProgress {
+  return applyAutomaticTaskReadiness({
+    ...progress,
+    flashcards: {
+      ...progress.flashcards,
+      [flashcardId]: "not-started",
+    },
+  });
 }
 
 export function markGuideOpened(progress: LearnerProgress, guideId: string): LearnerProgress {

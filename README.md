@@ -26,7 +26,7 @@ This is an independent learning resource, not an official BACB product. It does 
 - 105 original flashcards.
 - 190 original practice questions.
 - HTML study guide with section modals and original visual memory aids.
-- Local progress storage for task readiness, flashcards, question attempts, guide activity, and client-demonstration tracking.
+- Local progress storage for automatic task readiness, flashcards, question attempts, guide activity, and client-demonstration tracking.
 - Practice-readiness language only. The app does not claim official competence.
 - Favicon, manifest, meta description, and `.nojekyll` for static hosting.
 
@@ -116,3 +116,5 @@ rbt-practice-hub:v2:learner-progress
 ```
 
 It tracks task status, client demonstrations, flashcard known/needs-review marks with timestamps, question correct/incorrect attempts with timestamps, marked-for-review questions, and guide open/review timestamps.
+
+Task practice readiness is calculated automatically from learner activity. A task becomes practice ready when all questions for that task are currently correct, no questions for that task are marked for review, and all flashcards for that task are marked known. The Competency Map also shows a longer practice-depth target of 3 question passes, 3 flashcard passes, 5 practice days, and 3 study-guide opens.
