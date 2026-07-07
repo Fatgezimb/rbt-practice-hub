@@ -83,14 +83,32 @@
       }
 
       .side-nav a {
+        position: relative;
         display: block;
         margin-bottom: 8px;
-        padding: 9px 10px;
+        padding: 9px 10px 9px 22px;
         border-radius: var(--radius);
         color: #2d394b;
         font-size: 14px;
         font-weight: 760;
         text-decoration: none;
+      }
+
+      .section-nav-list {
+        position: relative;
+      }
+
+      .nav-scroll-dot {
+        position: absolute;
+        left: 5px;
+        top: 0;
+        width: 9px;
+        height: 9px;
+        border-radius: 999px;
+        background: var(--teal);
+        box-shadow: 0 0 0 5px rgba(15, 139, 141, 0.13);
+        transform: translateY(var(--nav-dot-y, 18px));
+        transition: transform 180ms ease;
       }
 
       .side-nav a:hover,
@@ -362,7 +380,7 @@
 
       .mini-timeline {
         display: grid;
-        grid-template-columns: repeat(5, minmax(0, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
         gap: 6px;
       }
 
@@ -370,6 +388,7 @@
         min-height: 54px;
         justify-content: center;
         text-align: center;
+        word-break: normal;
       }
 
       .mini-token span:first-child::before {
@@ -404,9 +423,18 @@
 
         .quick-grid,
         .visual-grid,
-        .mini-timeline,
         .learning-row {
           grid-template-columns: 1fr;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+
+        .nav-scroll-dot {
+          transition: none;
         }
       }
     </style>
@@ -418,11 +446,14 @@
           <strong>RBT Study Guide</strong>
           <span>Independent practice notes for the Initial Competency Assessment.</span>
         </div>
-        <a href="#memory-aids">Memory Aids</a>
-        <a href="#measurement">Measurement</a>
-        <a href="#assessment">Assessment</a>
-        <a href="#skill">Skill Acquisition and Behavior Reduction</a>
-        <a href="#professionalism">Professionalism and Requirements</a>
+        <div class="section-nav-list">
+          <span class="nav-scroll-dot" aria-hidden="true"></span>
+          <a href="#memory-aids">Memory Aids</a>
+          <a href="#measurement">Measurement</a>
+          <a href="#assessment">Assessment</a>
+          <a href="#skill">Skill Acquisition and Behavior Reduction</a>
+          <a href="#professionalism">Professionalism and Requirements</a>
+        </div>
       </nav>
 
       <main>
@@ -649,20 +680,34 @@
     </div>
     <script>
       const sectionLinks = Array.from(document.querySelectorAll(".side-nav a[href^='#']"));
+      const navList = document.querySelector(".section-nav-list");
+      const navDot = document.querySelector(".nav-scroll-dot");
       const guideSections = sectionLinks
         .map((link) => document.querySelector(link.getAttribute("href")))
         .filter(Boolean);
 
+      function moveNavDot(activeLink) {
+        if (!navList || !navDot || !activeLink) {
+          return;
+        }
+
+        const dotY = activeLink.offsetTop + activeLink.offsetHeight / 2 - navDot.offsetHeight / 2;
+        navList.style.setProperty("--nav-dot-y", `${dotY}px`);
+      }
+
       function setActiveSection(sectionId) {
+        let activeLink = null;
         sectionLinks.forEach((link) => {
           const isActive = link.getAttribute("href") === `#${sectionId}`;
           link.classList.toggle("is-active", isActive);
           if (isActive) {
             link.setAttribute("aria-current", "true");
+            activeLink = link;
           } else {
             link.removeAttribute("aria-current");
           }
         });
+        moveNavDot(activeLink);
       }
 
       function updateActiveSection() {

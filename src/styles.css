@@ -102,6 +102,10 @@ a {
   white-space: nowrap;
 }
 
+.brand-name-short {
+  display: none;
+}
+
 .top-nav {
   display: flex;
   justify-content: center;
@@ -3486,6 +3490,14 @@ button.guide-html-link {
 
   .brand-name {
     font-size: 19px;
+  }
+
+  .brand-name-full {
+    display: none;
+  }
+
+  .brand-name-short {
+    display: inline;
   }
 
   .top-nav-link {

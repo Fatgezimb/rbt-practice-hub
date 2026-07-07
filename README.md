@@ -8,7 +8,7 @@ Repository: https://github.com/Fatgezimb/rbt-practice-hub
 
 ## Disclaimer
 
-This is an independent learning resource, not an official BACB product. It does not replace the official assessment packet, assessor judgment, employer policy, supervision requirements, or BACB requirements. The app does not use BACB logos, Quizlet branding, copied Quizlet content, or copied third-party flashcard wording.
+This is an independent learning resource, not an official BACB product. It does not replace the official assessment packet, assessor judgment, employer policy, supervision requirements, or BACB requirements. The app does not use BACB logos, copyrighted branding, or copied third-party flashcard wording.
 
 ## Source Files Used
 
@@ -77,7 +77,7 @@ Each card should include:
 - `tags`
 - `difficulty`
 
-Keep wording original. Do not copy Quizlet, BACB text beyond short task labels, or third-party study-set wording.
+Keep wording original. Do not copy BACB text beyond short task labels or third-party study-set wording.
 
 ## How To Add Or Edit Questions
 

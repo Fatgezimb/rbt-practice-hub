@@ -44,7 +44,10 @@ export function Header({ onOpenDrawer }: { onOpenDrawer: () => void }) {
         <span className="brand-mark" aria-hidden="true">
           <Brain size={27} />
         </span>
-        <span className="brand-name">RBT Practice Hub</span>
+        <span className="brand-name">
+          <span className="brand-name-full">RBT Practice Hub</span>
+          <span className="brand-name-short">RBT</span>
+        </span>
       </NavLink>
 
       <nav className="top-nav" aria-label="Primary navigation">

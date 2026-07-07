@@ -1,4 +1,3 @@
-import { Menu } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Footer } from "./Footer";
@@ -67,10 +66,6 @@ export function AppLayout() {
         </main>
       </div>
       <Footer />
-      <button className="floating-drawer-button" type="button" onClick={() => setDrawerOpen(true)}>
-        <Menu size={22} aria-hidden="true" />
-        <span className="sr-only">Open task progress drawer</span>
-      </button>
       <MobileProgressDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
     </div>
   );

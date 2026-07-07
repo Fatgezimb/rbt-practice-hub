@@ -68,7 +68,7 @@ This file tracks the current implementation/QA sequence so work can resume clean
 - [x] Question count is >= 190.
 - [x] Study guide opens correctly and is complete.
 - [x] No BACB logo is used.
-- [x] No Quizlet branding or copied Quizlet content appears.
+- [x] No unauthorized branding or copied third-party content appears.
 - [x] Disclaimer appears in footer and About page.
 - [x] Task names and assessment types match the BACB competency PDF.
 - [x] Client-demonstration reminder appears in the right places.
@@ -132,4 +132,4 @@ Status: completed locally; ready for final QA/deploy.
 - `npm run dev -- --host 127.0.0.1 --port 5184 --strictPort` started successfully and returned HTTP 200 for the app shell.
 - Local asset checks returned HTTP 200 for the study guide PDF, favicon, and manifest.
 - Count check passed: 105 flashcards, 190 questions, 19 competency tasks.
-- Branding/disclaimer scan found only permitted disclaimer/documentation references and no Quizlet branding.
+- Branding/disclaimer scan found only permitted disclaimer/documentation references and no unauthorized branding.

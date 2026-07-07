@@ -16,8 +16,7 @@ export function AboutPage() {
           explanations and future study materials should use original wording.
         </p>
         <p>
-          The app intentionally avoids BACB logos, Quizlet branding, copied Quizlet content, and copied third-party
-          flashcard wording.
+          The app intentionally avoids BACB logos, copyrighted branding, and copied third-party flashcard wording.
         </p>
         <div className="source-links">
           <a href={studyAssets.officialPacketPdf} target="_blank" rel="noopener noreferrer">
